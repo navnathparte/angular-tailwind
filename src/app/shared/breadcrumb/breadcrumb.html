@@ -1,0 +1,10 @@
+<nav class="text-sm text-gray-500 mb-4">
+  <ol class="flex items-center gap-2">
+    <li class="text-amber-500 font-medium">Home</li>
+
+    @for (crumb of breadcrumbs; track crumb) {
+      <li>/</li>
+      <li class="capitalize">{{ crumb }}</li>
+    }
+  </ol>
+</nav>

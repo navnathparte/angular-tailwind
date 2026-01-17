@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { LoaderService, LoaderType } from '../../core/services/loader.service';
 import { ToastService } from '../../core/services/toast.service';
+import { Breadcrumb } from '../../shared/breadcrumb/breadcrumb';
 
 interface Card {
   title: string;
@@ -13,6 +14,7 @@ interface Card {
 @Component({
   selector: 'app-landing',
   standalone: true,
+  imports: [Breadcrumb],
   templateUrl: './landing.html',
 })
 export class Landing {
