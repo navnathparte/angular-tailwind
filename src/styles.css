@@ -13,3 +13,8 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+app-toaster {
+  position: relative;
+  z-index: 9999;
+}

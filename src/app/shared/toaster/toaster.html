@@ -1,0 +1,52 @@
+<!-- Toast Container -->
+<div class="fixed inset-0 pointer-events-none z-50">
+  @for (position of positions; track position) {
+    <div
+      class="absolute flex flex-col gap-2 p-4 pointer-events-none"
+      [ngClass]="getPositionClass(position)"
+    >
+      @for (toast of getToastsByPosition(position); track toast.id) {
+        <div
+          class="toast-item pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border-l-4 min-w-[300px] max-w-md backdrop-blur-sm"
+          [ngClass]="getToastClass(toast.type)"
+        >
+          <!-- Icon or Loader -->
+          <div class="flex-shrink-0">
+            @if (toast.type === 'loading') {
+              <div
+                class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
+              ></div>
+            } @else if (toast.icon) {
+              <div
+                class="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold"
+                [ngClass]="getIconClass(toast.type)"
+              >
+                {{ toast.icon }}
+              </div>
+            }
+          </div>
+
+          <!-- Message -->
+          <div class="flex-1 text-gray-800 text-sm font-medium">
+            {{ toast.message }}
+          </div>
+
+          <!-- Close Button -->
+          <button
+            (click)="dismiss(toast.id)"
+            class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

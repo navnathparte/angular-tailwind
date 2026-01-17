@@ -1,0 +1,5 @@
+<div class="relative w-1/2 h-[100px] overflow-hidden">
+  @for (index of files; track index) {
+    <div class="pfile absolute bottom-[25px] w-10 h-[50px] rounded" [style.--i]="index"></div>
+  }
+</div>

@@ -1,0 +1,21 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+  @if (type === 'skeleton') {
+    <app-skeleton-loader></app-skeleton-loader>
+  }
+
+  @if (type === 'fullscreen') {
+    <app-fullscreen-loader></app-fullscreen-loader>
+  }
+
+  @if (type === 'loading-logo') {
+    <app-loading-logo></app-loading-logo>
+  }
+
+  @if (type === 'orbe') {
+    <app-orbe></app-orbe>
+  }
+
+  @if (type === 'card') {
+    <app-card></app-card>
+  }
+</div>

@@ -1,0 +1,18 @@
+<div class="relative w-full h-[200px] flex justify-center items-center">
+  <!-- Circle Loader -->
+  <div class="flex gap-[15px]">
+    @for (circle of circles; track $index) {
+      <div
+        class="circle w-[45px] h-[45px] rounded-full relative"
+        [style.animation-delay]="circle.delay"
+      ></div>
+    }
+  </div>
+
+  <!-- Loading Text -->
+  <div
+    class="loading-text absolute bottom-[30px] left-1/2 -translate-x-1/2 text-2xl font-light text-gray-600 tracking-wider"
+  >
+    Loading...
+  </div>
+</div>
