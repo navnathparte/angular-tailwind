@@ -30,7 +30,7 @@
           <div
             class="card-style animate-fadeInUp"
             [style.animation-delay]="card.delay"
-            (click)="showLoader(card.loader)"
+            (click)="navigate(card)"
           >
             <div class="text-3xl">{{ card.icon }}</div>
             <div class="badge">{{ card.title }}</div>

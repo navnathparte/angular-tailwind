@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LoaderService, LoaderType } from '../../core/services/loader.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Breadcrumb } from '../../shared/breadcrumb/breadcrumb';
+import { Router } from '@angular/router';
 
 interface Card {
   title: string;
@@ -21,6 +22,7 @@ export class Landing {
   constructor(
     private loaderService: LoaderService,
     private toast: ToastService,
+    private router: Router,
   ) {}
 
   header = {
@@ -94,5 +96,14 @@ export class Landing {
       this.toast.dismiss(id);
       this.toast.success('Done!');
     }, 2000);
+  }
+
+  navigate(card: Card) {
+    this.loaderService.show(card.loader);
+
+    setTimeout(() => {
+      this.loaderService.hide();
+      this.router.navigate(['/winner', card.title.toLowerCase()]);
+    }, 1200);
   }
 }

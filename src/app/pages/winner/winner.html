@@ -1,0 +1,9 @@
+<div class="p-6">
+  <app-dynamic-table
+    [config]="tableConfig"
+    (rowSelected)="onRowsSelected($event)"
+    (bulkActionClick)="onBulkAction($event)"
+    (filterChange)="onFilterChange($event)"
+  >
+  </app-dynamic-table>
+</div>

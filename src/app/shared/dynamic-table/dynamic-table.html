@@ -1,0 +1,148 @@
+<div class="w-full bg-white rounded-lg shadow">
+  <!-- Header -->
+  <div class="p-4 border-b border-gray-200 flex items-center justify-between gap-4 flex-wrap">
+    <!-- Page Size -->
+    <div class="flex items-center gap-2">
+      <select
+        [(ngModel)]="pagination.pageSize"
+        (change)="onPageSizeChange(pagination.pageSize)"
+        class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+      >
+        @for (size of config.pagination?.pageSizeOptions ?? [5, 10, 20, 50]; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filters -->
+    @if (config.filters?.enabled && (config.filters?.filters?.length ?? 0) > 0) {
+      <div class="flex items-center gap-2 flex-wrap">
+        @for (filter of config.filters?.filters ?? []; track filter.key) {
+          @if (filter.type === 'dropdown') {
+            <select
+              [(ngModel)]="filterValues[filter.key]"
+              (change)="onFilterChange(filter.key, filterValues[filter.key])"
+              class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">{{ filter.label }}</option>
+              @for (option of filter.options ?? []; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          }
+        }
+      </div>
+    }
+
+    <!-- Search -->
+    @if (config.showSearch) {
+      <input
+        [(ngModel)]="searchTerm"
+        (input)="onSearch(searchTerm)"
+        placeholder="Search..."
+        class="px-3 py-2 border border-gray-300 rounded-lg text-sm w-64"
+      />
+    }
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b">
+        <tr>
+          @if (config.selectable) {
+            <th class="px-4 py-3">
+              <input type="checkbox" [checked]="allRowsSelected" (change)="toggleAllRows()" />
+            </th>
+          }
+
+          @for (column of config.columns; track column.key) {
+            <th
+              class="px-4 py-3 text-xs font-semibold uppercase cursor-pointer"
+              (click)="onSort(column)"
+            >
+              {{ column.header }}
+            </th>
+          }
+
+          @if (config.actions?.length) {
+            <th class="px-4 py-3 text-center text-xs font-semibold uppercase">Action</th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (row of displayData; track row) {
+          <tr class="border-b hover:bg-gray-50">
+            @if (config.selectable) {
+              <td class="px-4 py-3">
+                <input
+                  type="checkbox"
+                  [checked]="isRowSelected(row)"
+                  (change)="toggleRowSelection(row)"
+                />
+              </td>
+            }
+
+            @for (column of config.columns; track column.key) {
+              <td class="px-4 py-3 text-sm">
+                @if (column.type === 'badge') {
+                  <span
+                    class="px-2 py-1 rounded text-white text-xs"
+                    [ngClass]="getBadgeColor(getCellValue(row, column.key), column)"
+                  >
+                    {{ formatCellValue(row, column) }}
+                  </span>
+                } @else if (column.type === 'icons') {
+                  @for (icon of column.iconConfig?.icons ?? []; track icon) {
+                    <span>{{ icon }}</span>
+                  }
+                } @else {
+                  {{ formatCellValue(row, column) }}
+                }
+              </td>
+            }
+
+            @if (config.actions?.length) {
+              <td class="px-4 py-3 text-center">
+                @for (action of config.actions ?? []; track action.label) {
+                  <button
+                    (click)="executeAction(action, row)"
+                    class="px-3 py-1 bg-blue-600 text-white rounded"
+                  >
+                    {{ action.label }}
+                  </button>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  @if (config.pagination?.enabled) {
+    <div class="p-3 flex justify-between text-sm text-gray-600">
+      <div>
+        Showing {{ (pagination.currentPage - 1) * pagination.pageSize + 1 }} to
+        {{ Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems) }}
+      </div>
+
+      <div class="flex gap-1">
+        @for (page of pageNumbers; track page) {
+          <button
+            (click)="onPageChange(page)"
+            [ngClass]="
+              page === pagination.currentPage
+                ? 'bg-orange-500 text-white px-3 py-1 rounded'
+                : 'px-3 py-1 border rounded'
+            "
+          >
+            {{ page }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>
