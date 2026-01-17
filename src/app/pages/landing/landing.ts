@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
-import { LoaderService, LoaderType } from '../../core/services/loader.service';
-import { ToastService } from '../../core/services/toast.service';
-import { Breadcrumb } from '../../shared/breadcrumb/breadcrumb';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { LoaderService, LoaderType } from '../../core/services/loader.service';
+import { Breadcrumb } from '../../shared/breadcrumb/breadcrumb';
 
 interface Card {
   title: string;
@@ -15,15 +14,17 @@ interface Card {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [Breadcrumb],
   templateUrl: './landing.html',
 })
-export class Landing {
+export class Landing implements AfterViewInit, OnDestroy {
   constructor(
     private loaderService: LoaderService,
-    private toast: ToastService,
     private router: Router,
   ) {}
+
+  @ViewChild('cardScroller') scroller!: ElementRef;
+
+  scrollInterval!: any;
 
   header = {
     label: 'EXCELLENCE HUB',
@@ -71,31 +72,39 @@ export class Landing {
     },
   ];
 
-  showLoader(type: LoaderType) {
-    console.log('type', type);
-    this.loaderService.show(type);
-
-    setTimeout(() => {
-      this.loaderService.hide();
-      this.toast.success('Successfully load!', { position: 'top-center' });
-    }, 2000);
+  ngAfterViewInit() {
+    this.scroller.nativeElement.addEventListener('scroll', () => this.updateActiveCard());
+    this.startAutoScroll();
+    this.updateActiveCard();
   }
 
-  showSuccess() {
-    this.toast.success('Data saved successfully!');
+  startAutoScroll() {
+    const container = this.scroller.nativeElement;
+
+    this.scrollInterval = setInterval(() => {
+      const step = 350;
+      container.scrollBy({ left: step, behavior: 'smooth' });
+
+      const maxScroll = container.scrollWidth - container.clientWidth;
+
+      if (container.scrollLeft >= maxScroll - 10) {
+        setTimeout(() => {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        }, 600);
+      }
+    }, 3000);
   }
 
-  showError() {
-    this.toast.error('Something went wrong!');
-  }
+  updateActiveCard() {
+    const container = this.scroller.nativeElement;
+    const cards = container.querySelectorAll('.card-item');
 
-  showLoading() {
-    const id = this.toast.loading('Saving data...');
+    const center = container.scrollLeft + container.clientWidth / 2;
 
-    setTimeout(() => {
-      this.toast.dismiss(id);
-      this.toast.success('Done!');
-    }, 2000);
+    cards.forEach((card: any) => {
+      const cardCenter = card.offsetLeft + card.clientWidth / 2;
+      card.classList.toggle('active-card', Math.abs(center - cardCenter) < card.clientWidth / 2);
+    });
   }
 
   navigate(card: Card) {
@@ -105,5 +114,9 @@ export class Landing {
       this.loaderService.hide();
       this.router.navigate(['/winner', card.title.toLowerCase()]);
     }, 1200);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.scrollInterval);
   }
 }

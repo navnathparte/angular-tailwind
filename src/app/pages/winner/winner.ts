@@ -5,7 +5,7 @@ import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-winner',
-  imports: [NgClass, DynamicTable],
+  imports: [DynamicTable],
   templateUrl: './winner.html',
   styleUrl: './winner.css',
 })
