@@ -1,117 +1,95 @@
-<div class="w-full bg-white rounded-lg shadow">
-  <!-- Header -->
-  <div class="p-4 border-b border-gray-200 flex items-center justify-between gap-4 flex-wrap">
-    <!-- Page Size -->
-    <div class="flex items-center gap-2">
+<div class="bg-white rounded-lg shadow h-full flex flex-col">
+  <!-- Filters -->
+
+  <div class="p-4 border-b bg-gray-50 flex flex-wrap gap-3 items-center">
+    <!-- Rows per page -->
+    <div class="flex items-center gap-2 text-sm text-gray-600">
+      <span>Rows per page:</span>
       <select
-        [(ngModel)]="pagination.pageSize"
-        (change)="onPageSizeChange(pagination.pageSize)"
-        class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+        [ngModel]="rowsPerPage()"
+        (ngModelChange)="rowsPerPage.set($event); page.set(1)"
+        class="border border-gray-300 rounded px-2 py-1 bg-white text-sm"
       >
-        @for (size of config.pagination?.pageSizeOptions ?? [5, 10, 20, 50]; track size) {
+        @for (size of config.pageSizeOptions || [5, 10, 25, 50]; track size) {
           <option [value]="size">{{ size }}</option>
         }
       </select>
     </div>
 
     <!-- Filters -->
-    @if (config.filters?.enabled && (config.filters?.filters?.length ?? 0) > 0) {
-      <div class="flex items-center gap-2 flex-wrap">
-        @for (filter of config.filters?.filters ?? []; track filter.key) {
-          @if (filter.type === 'dropdown') {
-            <select
-              [(ngModel)]="filterValues[filter.key]"
-              (change)="onFilterChange(filter.key, filterValues[filter.key])"
-              class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            >
-              <option value="">{{ filter.label }}</option>
-              @for (option of filter.options ?? []; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select>
-          }
+    @for (f of config.filters; track f.key) {
+      <select
+        [ngModel]="filters()[f.key]"
+        (ngModelChange)="updateFilter(f.key, $event)"
+        class="border rounded-lg px-3 py-2 text-sm bg-white"
+      >
+        <option value="">{{ f.label }}</option>
+        @for (opt of f.options; track opt) {
+          <option [value]="opt">{{ opt }}</option>
         }
-      </div>
+      </select>
     }
 
     <!-- Search -->
-    @if (config.showSearch) {
-      <input
-        [(ngModel)]="searchTerm"
-        (input)="onSearch(searchTerm)"
-        placeholder="Search..."
-        class="px-3 py-2 border border-gray-300 rounded-lg text-sm w-64"
-      />
-    }
+    <input
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event); page.set(1)"
+      placeholder="Search"
+      class="ml-auto border rounded-lg px-3 py-2 text-sm w-64"
+    />
   </div>
 
-  <!-- Table -->
-  <div class="overflow-x-auto">
-    <table class="w-full">
-      <thead class="bg-gray-50 border-b">
+  <!-- Scrollable Table -->
+  <div class="flex-1 overflow-auto relative table-scroll">
+    <table class="w-full min-w-max border-collapse">
+      <thead class="sticky top-0 bg-white z-40">
         <tr>
-          @if (config.selectable) {
-            <th class="px-4 py-3">
-              <input type="checkbox" [checked]="allRowsSelected" (change)="toggleAllRows()" />
-            </th>
-          }
-
-          @for (column of config.columns; track column.key) {
+          @for (col of config.columns; track col.key) {
             <th
-              class="px-4 py-3 text-xs font-semibold uppercase cursor-pointer"
-              (click)="onSort(column)"
+              class="px-4 py-3 text-xs font-semibold uppercase bg-white"
+              [ngClass]="[
+                col.width,
+                col.sticky === 'left' ? 'sticky left-0 z-50 border-r bg-white' : '',
+                col.sticky === 'right' ? 'sticky right-0 z-50 border-l bg-white' : '',
+              ]"
+              [style.left]="col.sticky === 'left' ? col.stickyOffset : null"
+              [style.right]="col.sticky === 'right' ? col.stickyOffset : null"
             >
-              {{ column.header }}
+              {{ col.label }}
             </th>
-          }
-
-          @if (config.actions?.length) {
-            <th class="px-4 py-3 text-center text-xs font-semibold uppercase">Action</th>
           }
         </tr>
       </thead>
 
       <tbody>
-        @for (row of displayData; track row) {
-          <tr class="border-b hover:bg-gray-50">
-            @if (config.selectable) {
-              <td class="px-4 py-3">
-                <input
-                  type="checkbox"
-                  [checked]="isRowSelected(row)"
-                  (change)="toggleRowSelection(row)"
-                />
-              </td>
-            }
-
-            @for (column of config.columns; track column.key) {
-              <td class="px-4 py-3 text-sm">
-                @if (column.type === 'badge') {
-                  <span
-                    class="px-2 py-1 rounded text-white text-xs"
-                    [ngClass]="getBadgeColor(getCellValue(row, column.key), column)"
-                  >
-                    {{ formatCellValue(row, column) }}
-                  </span>
-                } @else if (column.type === 'icons') {
-                  @for (icon of column.iconConfig?.icons ?? []; track icon) {
-                    <span>{{ icon }}</span>
+        @for (row of paginated(); track row.id) {
+          <tr class="hover:bg-gray-50">
+            @for (col of config.columns; track col.key) {
+              <td
+                class="px-4 py-3 text-sm whitespace-nowrap bg-white"
+                [ngClass]="[
+                  col.width,
+                  col.sticky === 'left' ? 'sticky left-0 z-30 border-r bg-white' : '',
+                  col.sticky === 'right' ? 'sticky right-0 z-30 border-l bg-white' : '',
+                ]"
+                [style.left]="col.sticky === 'left' ? col.stickyOffset : null"
+                [style.right]="col.sticky === 'right' ? col.stickyOffset : null"
+              >
+                @switch (col.type) {
+                  @case ('action') {
+                    <button
+                      (click)="actionClick.emit(row)"
+                      class="px-3 py-1 bg-blue-600 text-white text-xs rounded"
+                    >
+                      {{ row.status }}
+                    </button>
                   }
-                } @else {
-                  {{ formatCellValue(row, column) }}
-                }
-              </td>
-            }
 
-            @if (config.actions?.length) {
-              <td class="px-4 py-3 text-center">
-                @for (action of config.actions ?? []; track action.label) {
-                  <button
-                    (click)="executeAction(action, row)"
-                    class="px-3 py-1 bg-blue-600 text-white rounded"
-                  >
-                    {{ action.label }}
-                  </button>
+                  @default {
+                    <span (click)="col.clickable ? openModal(col.label, row[col.key]) : null">
+                      {{ col.truncate ? truncate(row[col.key], col.truncate) : row[col.key] }}
+                    </span>
+                  }
                 }
               </td>
             }
@@ -121,28 +99,51 @@
     </table>
   </div>
 
-  <!-- Pagination -->
-  @if (config.pagination?.enabled) {
-    <div class="p-3 flex justify-between text-sm text-gray-600">
-      <div>
-        Showing {{ (pagination.currentPage - 1) * pagination.pageSize + 1 }} to
-        {{ Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems) }}
-      </div>
+  <!-- Footer -->
+  <div class="p-4 border-t bg-gray-50 flex justify-end">
+    <div class="flex gap-1 items-center text-sm">
+      <button
+        (click)="page.set(page() - 1)"
+        [disabled]="page() === 1"
+        class="px-2 py-1 border rounded disabled:opacity-40"
+      >
+        Prev
+      </button>
 
-      <div class="flex gap-1">
-        @for (page of pageNumbers; track page) {
-          <button
-            (click)="onPageChange(page)"
-            [ngClass]="
-              page === pagination.currentPage
-                ? 'bg-orange-500 text-white px-3 py-1 rounded'
-                : 'px-3 py-1 border rounded'
-            "
-          >
-            {{ page }}
-          </button>
-        }
-      </div>
+      @for (p of pages(); track p) {
+        <button
+          (click)="page.set(p)"
+          class="px-3 py-1 border rounded"
+          [ngClass]="
+            page() === p
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+          "
+        >
+          {{ p }}
+        </button>
+      }
+
+      <button
+        (click)="page.set(page() + 1)"
+        [disabled]="page() === totalPages()"
+        class="px-2 py-1 border rounded disabled:opacity-40"
+      >
+        Next
+      </button>
     </div>
-  }
+  </div>
 </div>
+
+<!-- Modal -->
+@if (modalOpen()) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow max-w-lg w-full">
+      <div class="flex justify-between mb-4">
+        <h3 class="font-semibold">{{ modalTitle() }}</h3>
+        <button (click)="modalOpen.set(false)">✕</button>
+      </div>
+      <p class="text-sm whitespace-pre-line">{{ modalContent() }}</p>
+    </div>
+  </div>
+}
