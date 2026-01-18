@@ -12,33 +12,57 @@ import { TableConfig } from '../../shared/dynamic-table/table.interface';
 export class Winner {
   tableConfig: TableConfig = {
     columns: [
-      { key: 'employee', label: 'Employee Name', sortable: true, clickable: true, width: 'w-40' },
+      { key: 'employee', label: 'Employee Name', type: 'groupToggle', group: 'employeeDetails' },
 
-      { key: 'grade', label: 'Grade', sortable: true, width: 'w-16' },
-      { key: 'function', label: 'Function', sortable: true, width: 'w-52' },
-      { key: 'account', label: 'Account', sortable: true, width: 'w-52' },
-      { key: 'process', label: 'Process', sortable: true, width: 'w-28' },
+      { key: 'grade', label: 'Grade', hidden: true, expandable: true, group: 'employeeDetails' },
+      {
+        key: 'function',
+        label: 'Function',
+        hidden: true,
+        expandable: true,
+        group: 'employeeDetails',
+      },
+      {
+        key: 'account',
+        label: 'Account',
+        hidden: true,
+        expandable: true,
+        group: 'employeeDetails',
+      },
+      {
+        key: 'process',
+        label: 'Process',
+        hidden: true,
+        expandable: true,
+        group: 'employeeDetails',
+      },
 
       { key: 'supervisor', label: 'Supervisor Name', sortable: true, width: 'w-40' },
       { key: 'nominator', label: 'Nominator Name', sortable: true, width: 'w-40' },
       { key: 'nominationDate', label: 'Nomination Date', sortable: true, width: 'w-36' },
+      { key: 'remarksToggle', label: 'Remarks', type: 'groupToggle', group: 'remarksGroup' },
 
       {
         key: 'nominatorRemark',
         label: 'Nominator Remark',
-        truncate: 15,
-        clickable: true,
-        width: 'w-64',
+        hidden: true,
+        expandable: true,
+        group: 'remarksGroup',
       },
       {
         key: 'evaluatorRemark',
         label: 'Evaluator Remark',
-        truncate: 15,
-        clickable: true,
-        width: 'w-64',
+        hidden: true,
+        expandable: true,
+        group: 'remarksGroup',
       },
-      { key: 'selectorRemark', label: 'Selector Remark', truncate: 15, width: 'w-64' },
-
+      {
+        key: 'selectorRemark',
+        label: 'Selector Remark',
+        hidden: true,
+        expandable: true,
+        group: 'remarksGroup',
+      },
       {
         key: 'appreciation',
         label: 'Appreciation',

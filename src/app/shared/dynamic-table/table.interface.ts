@@ -1,7 +1,18 @@
 export interface TableColumn {
   key: string;
   label: string;
-  type?: 'text' | 'status' | 'action' | 'checkbox' | 'appreciation';
+  hidden?: boolean;
+  group?: string;
+  expandable?: boolean;
+  type?:
+    | 'text'
+    | 'status'
+    | 'action'
+    | 'checkbox'
+    | 'appreciation'
+    | 'expand'
+    | 'columnToggle'
+    | 'groupToggle';
   sortable?: boolean;
   truncate?: number;
   clickable?: boolean;

@@ -46,6 +46,28 @@ export class DynamicTable {
   modalOpen = signal(false);
   modalTitle = signal('');
   modalContent = signal('');
+  columnsExpanded = signal(false);
+  expandedGroups = signal<Record<string, boolean>>({});
+
+  toggleGroup(group: string) {
+    this.expandedGroups.update((g) => ({
+      ...g,
+      [group]: !g[group],
+    }));
+  }
+
+  toggleColumns() {
+    this.columnsExpanded.update((v) => !v);
+  }
+
+  visibleColumns = computed(() =>
+    this.config.columns.filter((col) => {
+      if (!col.expandable) return true;
+
+      const groupState = this.expandedGroups()[col.group || ''];
+      return groupState === true;
+    }),
+  );
 
   updateFilter(key: string, value: any) {
     this.filters.update((f) => ({ ...f, [key]: value }));
