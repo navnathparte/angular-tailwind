@@ -52,6 +52,34 @@ export class DynamicTable {
     this.page.set(1);
   }
 
+  refreshTable() {
+    this.search.set('');
+    this.filters.set({});
+    this.page.set(1);
+  }
+
+  startRecord = computed(() =>
+    this.filtered().length === 0 ? 0 : (this.page() - 1) * this.rowsPerPage() + 1,
+  );
+
+  endRecord = computed(() => Math.min(this.page() * this.rowsPerPage(), this.filtered().length));
+
+  functionOptions = computed(() =>
+    [...new Set(this.config?.data?.map((d) => d.function))].filter(Boolean),
+  );
+
+  accountOptions = computed(() =>
+    [...new Set(this.config?.data?.map((d) => d.account))].filter(Boolean),
+  );
+
+  processOptions = computed(() =>
+    [...new Set(this.config?.data?.map((d) => d.process))].filter(Boolean),
+  );
+
+  supervisorOptions = computed(() =>
+    [...new Set(this.config?.data?.map((d) => d.supervisor))].filter(Boolean),
+  );
+
   tableAutoHeight = computed(() => {
     const rows = this.filtered().length;
     return rows < this.rowsPerPage();

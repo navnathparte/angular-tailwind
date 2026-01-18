@@ -1,42 +1,112 @@
 <div class="bg-white rounded-lg shadow h-full flex flex-col">
-  <!-- Filters -->
+  <!-- TOP FILTER BAR -->
+  <div class="p-4 border-b border-gray-200 bg-gray-50">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <!-- LEFT : Rows per page -->
+      <div>
+        <select
+          [ngModel]="rowsPerPage()"
+          (ngModelChange)="rowsPerPage.set($event); page.set(1)"
+          class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm shadow-sm"
+        >
+          @for (r of config.pageSizeOptions || [5, 10, 25, 50]; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
+        </select>
+      </div>
 
-  <div class="p-4 border-b bg-gray-50 flex flex-wrap gap-3 items-center">
-    <!-- Rows per page -->
-    <div class="flex items-center gap-2 text-sm text-gray-600">
-      <span>Rows per page:</span>
-      <select
-        [ngModel]="rowsPerPage()"
-        (ngModelChange)="rowsPerPage.set($event); page.set(1)"
-        class="border border-gray-300 rounded px-2 py-1 bg-white text-sm"
-      >
-        @for (size of config.pageSizeOptions || [5, 10, 25, 50]; track size) {
-          <option [value]="size">{{ size }}</option>
-        }
-      </select>
+      <!-- CENTER : Filters -->
+      <div class="flex flex-wrap items-center gap-3 justify-center flex-1">
+        <select
+          [ngModel]="filters().function"
+          (ngModelChange)="updateFilter('function', $event)"
+          class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm shadow-sm"
+        >
+          <option value="">Select Function</option>
+          @for (f of functionOptions(); track f) {
+            <option [value]="f">{{ f }}</option>
+          }
+        </select>
+
+        <select
+          [ngModel]="filters().account"
+          (ngModelChange)="updateFilter('account', $event)"
+          class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm shadow-sm"
+        >
+          <option value="">Select Account</option>
+          @for (f of accountOptions(); track f) {
+            <option [value]="f">{{ f }}</option>
+          }
+        </select>
+
+        <select
+          [ngModel]="filters().process"
+          (ngModelChange)="updateFilter('process', $event)"
+          class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm shadow-sm"
+        >
+          <option value="">Select Process</option>
+          @for (f of processOptions(); track f) {
+            <option [value]="f">{{ f }}</option>
+          }
+        </select>
+
+        <select
+          [ngModel]="filters().supervisor"
+          (ngModelChange)="updateFilter('supervisor', $event)"
+          class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm shadow-sm"
+        >
+          <option value="">Select Manager</option>
+          @for (f of supervisorOptions(); track f) {
+            <option [value]="f">{{ f }}</option>
+          }
+        </select>
+
+        <!-- Filter Button -->
+        <button class="p-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
+          </svg>
+        </button>
+
+        <!-- Refresh -->
+        <button
+          (click)="refreshTable()"
+          class="p-2 border border-gray-300 bg-white rounded-lg shadow hover:bg-gray-50"
+        >
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- RIGHT : Search -->
+      <div class="relative">
+        <input
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event); page.set(1)"
+          placeholder="Search here"
+          class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm shadow-sm w-64 bg-white"
+        />
+        <svg
+          class="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
     </div>
-
-    <!-- Filters -->
-    @for (f of config.filters; track f.key) {
-      <select
-        [ngModel]="filters()[f.key]"
-        (ngModelChange)="updateFilter(f.key, $event)"
-        class="border rounded-lg px-3 py-2 text-sm bg-white"
-      >
-        <option value="">{{ f.label }}</option>
-        @for (opt of f.options; track opt) {
-          <option [value]="opt">{{ opt }}</option>
-        }
-      </select>
-    }
-
-    <!-- Search -->
-    <input
-      [ngModel]="search()"
-      (ngModelChange)="search.set($event); page.set(1)"
-      placeholder="Search"
-      class="ml-auto border rounded-lg px-3 py-2 text-sm w-64"
-    />
   </div>
 
   <!-- Scrollable Table -->
@@ -125,7 +195,12 @@
   </div>
 
   <!-- Footer -->
-  <div class="p-4 border-t bg-gray-50 flex justify-end items-center">
+  <div class="p-4 border-t bg-gray-50 flex justify-between items-center">
+    <!-- Showing Count -->
+    <div class="text-sm text-gray-600">
+      Showing {{ startRecord() }} to {{ endRecord() }} of {{ filtered().length }} results
+    </div>
+
     <div class="flex gap-1 items-center text-sm">
       <button
         (click)="page.set(page() - 1)"
