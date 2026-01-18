@@ -1,47 +1,166 @@
-.pfile {
-  background: linear-gradient(90deg, #b324db, #ac8dcb);
+.wifi-loader-container {
+  @apply flex justify-center items-center;
+}
+
+.wifi-loader {
+  --background: #62abff;
+  --front-color: #000;
+  --back-color: #c3c8de;
+  --text-color: #414856;
+  @apply w-16 h-16 rounded-full relative flex justify-center items-center;
+}
+
+.wifi-loader svg {
+  @apply absolute flex justify-center items-center;
+}
+
+.wifi-loader svg circle {
+  @apply absolute;
+  fill: none;
+  stroke-width: 6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-100deg);
   transform-origin: center;
-  animation: flyRight 3s ease-in-out infinite;
-  opacity: 0;
-  animation-delay: calc(var(--i) * 0.6s);
 }
 
-.pfile::before {
-  content: '';
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  width: 28px;
-  height: 4px;
-  background-color: #ffffff;
-  border-radius: 2px;
+.wifi-loader svg circle.back {
+  stroke: var(--back-color);
 }
 
-.pfile::after {
-  content: '';
-  position: absolute;
-  top: 13px;
-  left: 6px;
-  width: 18px;
-  height: 4px;
-  background-color: #ffffff;
-  border-radius: 2px;
+.wifi-loader svg circle.front {
+  stroke: var(--front-color);
 }
 
-@keyframes flyRight {
+.wifi-loader svg.circle-outer {
+  @apply h-[86px] w-[86px];
+}
+
+.wifi-loader svg.circle-outer circle {
+  stroke-dasharray: 62.75 188.25;
+}
+
+.wifi-loader svg.circle-outer circle.back {
+  animation: circle-outer135 1.8s ease infinite 0.3s;
+}
+
+.wifi-loader svg.circle-outer circle.front {
+  animation: circle-outer135 1.8s ease infinite 0.15s;
+}
+
+.wifi-loader svg.circle-middle {
+  @apply h-[60px] w-[60px];
+}
+
+.wifi-loader svg.circle-middle circle {
+  stroke-dasharray: 42.5 127.5;
+}
+
+.wifi-loader svg.circle-middle circle.back {
+  animation: circle-middle6123 1.8s ease infinite 0.25s;
+}
+
+.wifi-loader svg.circle-middle circle.front {
+  animation: circle-middle6123 1.8s ease infinite 0.1s;
+}
+
+.wifi-loader svg.circle-inner {
+  @apply h-[34px] w-[34px];
+}
+
+.wifi-loader svg.circle-inner circle {
+  stroke-dasharray: 22 66;
+}
+
+.wifi-loader svg.circle-inner circle.back {
+  animation: circle-inner162 1.8s ease infinite 0.2s;
+}
+
+.wifi-loader svg.circle-inner circle.front {
+  animation: circle-inner162 1.8s ease infinite 0.05s;
+}
+
+.wifi-loader .text {
+  @apply absolute -bottom-10 flex justify-center items-center lowercase font-medium text-sm tracking-wide;
+}
+
+.wifi-loader .text::before,
+.wifi-loader .text::after {
+  content: attr(data-text);
+}
+
+.wifi-loader .text::before {
+  color: var(--text-color);
+}
+
+.wifi-loader .text::after {
+  color: var(--front-color);
+  animation: text-animation76 3.6s ease infinite;
+  @apply absolute left-0;
+}
+
+@keyframes circle-outer135 {
   0% {
-    left: -10%;
-    transform: scale(0);
-    opacity: 0;
+    stroke-dashoffset: 25;
   }
-  50% {
-    left: 45%;
-    transform: scale(1.2);
-    opacity: 1;
+  25% {
+    stroke-dashoffset: 0;
+  }
+  65% {
+    stroke-dashoffset: 301;
+  }
+  80% {
+    stroke-dashoffset: 276;
   }
   100% {
-    left: 100%;
-    transform: scale(0);
-    opacity: 0;
+    stroke-dashoffset: 276;
+  }
+}
+
+@keyframes circle-middle6123 {
+  0% {
+    stroke-dashoffset: 17;
+  }
+  25% {
+    stroke-dashoffset: 0;
+  }
+  65% {
+    stroke-dashoffset: 204;
+  }
+  80% {
+    stroke-dashoffset: 187;
+  }
+  100% {
+    stroke-dashoffset: 187;
+  }
+}
+
+@keyframes circle-inner162 {
+  0% {
+    stroke-dashoffset: 9;
+  }
+  25% {
+    stroke-dashoffset: 0;
+  }
+  65% {
+    stroke-dashoffset: 106;
+  }
+  80% {
+    stroke-dashoffset: 97;
+  }
+  100% {
+    stroke-dashoffset: 97;
+  }
+}
+
+@keyframes text-animation76 {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  50% {
+    clip-path: inset(0);
+  }
+  100% {
+    clip-path: inset(0 0 0 100%);
   }
 }

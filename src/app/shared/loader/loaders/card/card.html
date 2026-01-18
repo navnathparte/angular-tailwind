@@ -1,5 +1,18 @@
-<div class="relative w-1/2 h-[100px] overflow-hidden">
-  @for (index of files; track index) {
-    <div class="pfile absolute bottom-[25px] w-10 h-[50px] rounded" [style.--i]="index"></div>
-  }
+<div class="wifi-loader-container">
+  <div class="wifi-loader">
+    <svg viewBox="0 0 86 86" class="circle-outer">
+      <circle r="40" cy="43" cx="43" class="back"></circle>
+      <circle r="40" cy="43" cx="43" class="front"></circle>
+      <circle r="40" cy="43" cx="43" class="new"></circle>
+    </svg>
+    <svg viewBox="0 0 60 60" class="circle-middle">
+      <circle r="27" cy="30" cx="30" class="back"></circle>
+      <circle r="27" cy="30" cx="30" class="front"></circle>
+    </svg>
+    <svg viewBox="0 0 34 34" class="circle-inner">
+      <circle r="14" cy="17" cx="17" class="back"></circle>
+      <circle r="14" cy="17" cx="17" class="front"></circle>
+    </svg>
+    <div [attr.data-text]="text" class="text">{{ text }}</div>
+  </div>
 </div>
