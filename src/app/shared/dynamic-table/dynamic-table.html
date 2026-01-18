@@ -40,67 +40,92 @@
   </div>
 
   <!-- Scrollable Table -->
-  <div class="flex-1 overflow-auto relative table-scroll">
-    <table class="w-full min-w-max border-collapse">
-      <thead class="sticky top-0 bg-white z-40">
-        <tr>
-          @for (col of config.columns; track col.key) {
-            <th
-              class="px-4 py-3 text-xs font-semibold uppercase bg-white"
-              [ngClass]="[
-                col.width,
-                col.sticky === 'left' ? 'sticky left-0 z-50 border-r bg-white' : '',
-                col.sticky === 'right' ? 'sticky right-0 z-50 border-l bg-white' : '',
-              ]"
-              [style.left]="col.sticky === 'left' ? col.stickyOffset : null"
-              [style.right]="col.sticky === 'right' ? col.stickyOffset : null"
-            >
-              {{ col.label }}
-            </th>
-          }
-        </tr>
-      </thead>
-
-      <tbody>
-        @for (row of paginated(); track row.id) {
-          <tr class="hover:bg-gray-50">
+  <div
+    [ngClass]="tableAutoHeight() ? 'overflow-x-auto' : 'flex-1 overflow-auto'"
+    class="relative table-scroll"
+  >
+    @if (tableAutoHeight()) {
+      <div class="h-40 bg-gradient-to-b from-white to-gray-50"></div>
+    }
+    @if (loading()) {
+      <div class="p-6 space-y-4 animate-pulse">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="grid grid-cols-12 gap-4">
+            @for (c of config.columns; track c.key) {
+              <div class="h-4 bg-gray-200 rounded col-span-1"></div>
+            }
+          </div>
+        }
+      </div>
+    } @else if (filtered().length > 0) {
+      <table class="w-full min-w-max border-collapse">
+        <thead class="sticky top-0 bg-white z-40">
+          <tr>
             @for (col of config.columns; track col.key) {
-              <td
-                class="px-4 py-3 text-sm whitespace-nowrap bg-white"
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase bg-white"
                 [ngClass]="[
                   col.width,
-                  col.sticky === 'left' ? 'sticky left-0 z-30 border-r bg-white' : '',
-                  col.sticky === 'right' ? 'sticky right-0 z-30 border-l bg-white' : '',
+                  col.sticky === 'left' ? 'sticky left-0 z-50 border-r bg-white' : '',
+                  col.sticky === 'right' ? 'sticky right-0 z-50 border-l bg-white' : '',
                 ]"
                 [style.left]="col.sticky === 'left' ? col.stickyOffset : null"
                 [style.right]="col.sticky === 'right' ? col.stickyOffset : null"
               >
-                @switch (col.type) {
-                  @case ('action') {
-                    <button
-                      (click)="actionClick.emit(row)"
-                      class="px-3 py-1 bg-blue-600 text-white text-xs rounded"
-                    >
-                      {{ row.status }}
-                    </button>
-                  }
-
-                  @default {
-                    <span (click)="col.clickable ? openModal(col.label, row[col.key]) : null">
-                      {{ col.truncate ? truncate(row[col.key], col.truncate) : row[col.key] }}
-                    </span>
-                  }
-                }
-              </td>
+                {{ col.label }}
+              </th>
             }
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          @for (row of paginated(); track row.id) {
+            <tr class="hover:bg-gray-50">
+              @for (col of config.columns; track col.key) {
+                <td
+                  class="px-4 py-3 text-sm whitespace-nowrap bg-white"
+                  [ngClass]="[
+                    col.width,
+                    col.sticky === 'left' ? 'sticky left-0 z-30 border-r bg-white' : '',
+                    col.sticky === 'right' ? 'sticky right-0 z-30 border-l bg-white' : '',
+                  ]"
+                  [style.left]="col.sticky === 'left' ? col.stickyOffset : null"
+                  [style.right]="col.sticky === 'right' ? col.stickyOffset : null"
+                >
+                  @switch (col.type) {
+                    @case ('action') {
+                      <button
+                        (click)="actionClick.emit(row)"
+                        class="px-3 py-1 bg-blue-600 text-white text-xs rounded"
+                      >
+                        {{ row.status }}
+                      </button>
+                    }
+                    @default {
+                      <span>
+                        {{ col.truncate ? truncate(row[col.key], col.truncate) : row[col.key] }}
+                      </span>
+                    }
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div class="flex items-center justify-center h-full bg-white">
+        <div class="text-center">
+          <div class="text-5xl mb-3">📭</div>
+          <p class="text-gray-500 text-sm font-medium">No records available</p>
+          <p class="text-gray-400 text-xs mt-1">There is no data to display</p>
+        </div>
+      </div>
+    }
   </div>
 
   <!-- Footer -->
-  <div class="p-4 border-t bg-gray-50 flex justify-end">
+  <div class="p-4 border-t bg-gray-50 flex justify-end items-center">
     <div class="flex gap-1 items-center text-sm">
       <button
         (click)="page.set(page() - 1)"

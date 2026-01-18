@@ -1,4 +1,13 @@
-import { Component, Input, Output, EventEmitter, signal, computed, effect } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  signal,
+  computed,
+  effect,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableConfig, TableColumn } from './table.interface';
@@ -22,10 +31,17 @@ export class DynamicTable {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['config']?.currentValue?.data) {
+      this.loading.set(false);
+    }
+  }
+
   search = signal('');
   page = signal(1);
   rowsPerPage = signal(5);
   filters = signal<any>({});
+  loading = signal(true);
 
   modalOpen = signal(false);
   modalTitle = signal('');
@@ -35,6 +51,11 @@ export class DynamicTable {
     this.filters.update((f) => ({ ...f, [key]: value }));
     this.page.set(1);
   }
+
+  tableAutoHeight = computed(() => {
+    const rows = this.filtered().length;
+    return rows < this.rowsPerPage();
+  });
 
   totalPages = computed(() => Math.max(1, Math.ceil(this.filtered().length / this.rowsPerPage())));
 
