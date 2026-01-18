@@ -1,16 +1,14 @@
 <div class="bg-white rounded-lg shadow h-full flex flex-col">
-
   <!-- TOP BAR -->
   <div class="p-4 border-b bg-gray-50 flex items-center gap-3">
-
     <!-- Rows -->
     <select
       [ngModel]="rowsPerPage()"
       (ngModelChange)="rowsPerPage.set($event); page.set(1)"
       class="px-3 py-2 border rounded-lg bg-white text-sm"
     >
-      @for (r of config.pageSizeOptions || [5,10,25,50]; track r) {
-        <option [value]="r">{{r}}</option>
+      @for (r of config.pageSizeOptions || [5, 10, 25, 50]; track r) {
+        <option [value]="r">{{ r }}</option>
       }
     </select>
 
@@ -19,12 +17,12 @@
       @for (f of config.filters; track f.key) {
         <select
           [ngModel]="filters()[f.key]"
-          (ngModelChange)="updateFilter(f.key,$event)"
+          (ngModelChange)="updateFilter(f.key, $event)"
           class="px-3 py-2 border rounded-lg bg-white text-sm"
         >
-          <option value="">{{f.label}}</option>
+          <option value="">{{ f.label }}</option>
           @for (o of f.options; track o) {
-            <option [value]="o">{{o}}</option>
+            <option [value]="o">{{ o }}</option>
           }
         </select>
       }
@@ -39,19 +37,15 @@
     />
   </div>
 
-
   <!-- TABLE -->
   <div class="flex-1 overflow-auto table-scroll">
-
     @if (loading()) {
       <div class="p-6 animate-pulse space-y-3">
-        @for (i of [1,2,3,4,5]; track i) {
+        @for (i of [1, 2, 3, 4, 5]; track i) {
           <div class="h-6 bg-gray-200 rounded"></div>
         }
       </div>
-    }
-
-    @else if (filtered().length === 0) {
+    } @else if (filtered().length === 0) {
       <div class="h-full flex items-center justify-center text-center">
         <div>
           <div class="text-5xl mb-3">📭</div>
@@ -59,12 +53,8 @@
           <p class="text-gray-400 text-xs">Try adjusting filters</p>
         </div>
       </div>
-    }
-
-    @else {
-
+    } @else {
       <table class="w-full min-w-max border-collapse">
-
         <!-- HEADER -->
         <thead class="sticky top-0 bg-white z-40">
           <tr>
@@ -73,15 +63,15 @@
                 class="px-4 py-3 text-xs font-semibold uppercase bg-white"
                 [ngClass]="[
                   col.width || '',
-                  col.sticky === 'left' ? 'sticky left-0 z-50 border-r bg-white' : '',
-                  col.sticky === 'right' ? 'sticky right-0 z-50 border-l bg-white' : ''
+                  getGroupColor(col),
+                  col.sticky === 'left' ? 'sticky left-0 z-50 border-r' : '',
+                  col.sticky === 'right' ? 'sticky right-0 z-50 border-l' : '',
                 ]"
                 [style.left]="col.sticky === 'left' ? col.stickyOffset : null"
                 [style.right]="col.sticky === 'right' ? col.stickyOffset : null"
               >
-                @switch(col.type) {
-
-                  @case('groupToggle') {
+                @switch (col.type) {
+                  @case ('groupToggle') {
                     <div class="flex items-center gap-2">
                       <button
                         (click)="toggleGroup(col.group!)"
@@ -96,47 +86,47 @@
                   @default {
                     {{ col.label }}
                   }
-
                 }
               </th>
             }
           </tr>
         </thead>
 
-
         <!-- BODY -->
         <tbody>
           @for (row of paginated(); track row.id) {
             <tr class="hover:bg-gray-50">
-
               @for (col of visibleColumns(); track col.key) {
                 <td
                   class="px-4 py-3 text-sm bg-white whitespace-nowrap"
                   [ngClass]="[
                     col.width || '',
-                    col.sticky === 'left' ? 'sticky left-0 z-30 border-r bg-white' : '',
-                    col.sticky === 'right' ? 'sticky right-0 z-30 border-l bg-white' : ''
+                    getGroupColor(col),
+                    col.sticky === 'left' ? 'sticky left-0 z-30 border-r' : '',
+                    col.sticky === 'right' ? 'sticky right-0 z-30 border-l' : '',
                   ]"
                   [style.left]="col.sticky === 'left' ? col.stickyOffset : null"
                   [style.right]="col.sticky === 'right' ? col.stickyOffset : null"
                 >
+                  @switch (col.type) {
+                    @case ('groupToggle') {
+                      {{ row[col.key] }}
+                    }
 
-                  @switch(col.type) {
-
-                    @case('groupToggle') { }
-
-                    @case('status') {
-                      <span class="px-3 py-1 text-xs rounded"
-                            [ngClass]="col.statusMap?.[row[col.key]] || 'bg-gray-100 text-gray-600'">
+                    @case ('status') {
+                      <span
+                        class="px-3 py-1 text-xs rounded"
+                        [ngClass]="col.statusMap?.[row[col.key]] || 'bg-gray-100 text-gray-600'"
+                      >
                         {{ row[col.key] }}
                       </span>
                     }
 
-                    @case('appreciation') {
+                    @case ('appreciation') {
                       {{ col.appreciationMap?.[row[col.key]] || row[col.key] }}
                     }
 
-                    @case('action') {
+                    @case ('action') {
                       <button
                         (click)="actionClick.emit(row)"
                         class="px-3 py-1 bg-blue-600 text-white text-xs rounded"
@@ -148,37 +138,28 @@
                     @default {
                       {{ row[col.key] }}
                     }
-
                   }
-
                 </td>
               }
-
             </tr>
           }
         </tbody>
-
       </table>
     }
   </div>
 
-
   <!-- FOOTER -->
   <div class="p-4 border-t bg-gray-50 flex justify-between text-sm">
-    <div>
-      Showing {{startRecord()}} to {{endRecord()}} of {{filtered().length}} results
-    </div>
+    <div>Showing {{ startRecord() }} to {{ endRecord() }} of {{ filtered().length }} results</div>
 
     <div class="flex gap-1">
-      <button (click)="page.set(page()-1)" [disabled]="page()===1">Prev</button>
+      <button (click)="page.set(page() - 1)" [disabled]="page() === 1">Prev</button>
       @for (p of pages(); track p) {
-        <button (click)="page.set(p)"
-                [ngClass]="page()===p ? 'text-blue-600 font-semibold':''">
-          {{p}}
+        <button (click)="page.set(p)" [ngClass]="page() === p ? 'text-blue-600 font-semibold' : ''">
+          {{ p }}
         </button>
       }
-      <button (click)="page.set(page()+1)" [disabled]="page()===totalPages()">Next</button>
+      <button (click)="page.set(page() + 1)" [disabled]="page() === totalPages()">Next</button>
     </div>
   </div>
-
 </div>

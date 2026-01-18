@@ -49,6 +49,15 @@ export class DynamicTable {
   columnsExpanded = signal(false);
   expandedGroups = signal<Record<string, boolean>>({});
 
+  groupColors: Record<string, string> = {
+    employeeDetails: 'bg-amber-50',
+    remarksGroup: 'bg-blue-50',
+  };
+
+  getGroupColor(col: any) {
+    return this.groupColors[col.group || ''] || 'bg-white';
+  }
+
   toggleGroup(group: string) {
     this.expandedGroups.update((g) => ({
       ...g,

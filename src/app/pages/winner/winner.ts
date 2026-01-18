@@ -12,7 +12,12 @@ import { TableConfig } from '../../shared/dynamic-table/table.interface';
 export class Winner {
   tableConfig: TableConfig = {
     columns: [
-      { key: 'employee', label: 'Employee Name', type: 'groupToggle', group: 'employeeDetails' },
+      {
+        key: 'employeeName',
+        label: 'Employee Name',
+        type: 'groupToggle',
+        group: 'employeeDetails',
+      },
 
       { key: 'grade', label: 'Grade', hidden: true, expandable: true, group: 'employeeDetails' },
       {
@@ -37,16 +42,24 @@ export class Winner {
         group: 'employeeDetails',
       },
 
-      { key: 'supervisor', label: 'Supervisor Name', sortable: true, width: 'w-40' },
+      {
+        key: 'supervisor',
+        label: 'Supervisor Name',
+        hidden: true,
+        sortable: true,
+        expandable: true,
+        width: 'w-40',
+        group: 'employeeDetails',
+      },
       { key: 'nominator', label: 'Nominator Name', sortable: true, width: 'w-40' },
       { key: 'nominationDate', label: 'Nomination Date', sortable: true, width: 'w-36' },
-      { key: 'remarksToggle', label: 'Remarks', type: 'groupToggle', group: 'remarksGroup' },
 
       {
         key: 'nominatorRemark',
         label: 'Nominator Remark',
-        hidden: true,
-        expandable: true,
+        hidden: false,
+        expandable: false,
+        type: 'groupToggle',
         group: 'remarksGroup',
       },
       {
