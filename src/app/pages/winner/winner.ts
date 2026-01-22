@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DynamicTable } from '../../shared/dynamic-table/dynamic-table';
 import { TableConfig } from '../../shared/dynamic-table/table.interface';
+import { ShepherdService } from 'angular-shepherd';
 
 @Component({
   selector: 'app-winner',
@@ -10,6 +11,8 @@ import { TableConfig } from '../../shared/dynamic-table/table.interface';
   styleUrl: './winner.css',
 })
 export class Winner {
+  constructor(private shepherdService: ShepherdService) {}
+
   tableConfig: TableConfig = {
     columns: [
       {
@@ -466,5 +469,42 @@ export class Winner {
 
   handleAction(row: any) {
     console.log('Row action clicked:', row);
+  }
+
+  startTour() {
+    this.shepherdService.defaultStepOptions = {
+      cancelIcon: { enabled: true },
+      scrollTo: true,
+      classes: 'rounded shadow bg-white',
+    };
+
+    this.shepherdService.addSteps([
+      {
+        id: 'rows',
+        attachTo: { element: '.rows-dropdown', on: 'bottom' },
+        text: 'Select number of rows to display.',
+        buttons: [{ text: 'Next', action: this.shepherdService.next }],
+      },
+      {
+        id: 'filters',
+        attachTo: { element: '.filter-bar', on: 'bottom' },
+        text: 'Use these filters to narrow nominations.',
+        buttons: [
+          { text: 'Back', action: this.shepherdService.back },
+          { text: 'Next', action: this.shepherdService.next },
+        ],
+      },
+      {
+        id: 'table',
+        attachTo: { element: '.table-scroll', on: 'top' },
+        text: 'This is the dynamic nominations table.',
+        buttons: [
+          { text: 'Back', action: this.shepherdService.back },
+          { text: 'Finish', action: this.shepherdService.complete },
+        ],
+      },
+    ]);
+
+    this.shepherdService.start();
   }
 }
